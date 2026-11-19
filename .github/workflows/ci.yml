@@ -15,6 +15,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+        env:
+          # Die optionale Desktop-Hülle (Electron) wird in der CI nicht gebraucht.
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - run: npm run format:check
       - run: npm run lint -- --max-warnings 0
       - run: npm run test:coverage

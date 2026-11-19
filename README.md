@@ -27,6 +27,10 @@ npm run preview      # dist/ lokal ansehen
 `dist/` ist rein statisch und läuft auf jedem Webserver, auf GitHub Pages oder Cloudflare Pages
 (relative Pfade, kein Backend).
 
+Optional gibt es eine Desktop-Hülle (Electron), die `dist/` lokal ausliefert und in einem eigenen
+Fenster zeigt: `npm run desktop`. Mit `npx electron . --screenshot bild.png` speichert sie ein Bild der
+App und beendet sich (für automatische Prüfungen). Die Web-App selbst braucht sie nicht.
+
 | Befehl                            | Zweck                                               |
 | --------------------------------- | --------------------------------------------------- |
 | `npm test`                        | Unit- und Szenario-Tests (Vitest)                   |

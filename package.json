@@ -5,7 +5,9 @@
   "description": "Netzwerksimulation für den Unterricht – installationsfrei im Browser, mit VLANs und Rechenzentrums-Szenarien",
   "license": "GPL-3.0-or-later",
   "type": "module",
+  "main": "electron/main.cjs",
   "scripts": {
+    "desktop": "electron .",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
@@ -34,6 +36,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
     "@vitest/coverage-v8": "^5.1.1",
+    "electron": "^45.4.1",
     "eslint": "^10.15.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.8",
