@@ -46,6 +46,8 @@ describe('IPv4-Adressen', () => {
     expect(maskToPrefix(0)).toBe(0);
     expect(isValidMask('255.255.255.128')).toBe(true);
     expect(isValidMask('255.255.255.1')).toBe(false);
+    expect(isValidMask('0.0.0.0')).toBe(false); // EingabenUeberpruefung: «^11*0*$»
+    expect(isValidMask('128.0.0.0')).toBe(true);
     expect(isValidMask('nonsense')).toBe(false);
     expect(parseMask('255.255.255.0')).toBe(24);
     expect(() => parseMask('255.0.255.0')).toThrow(/Subnetzmaske/);
@@ -72,12 +74,17 @@ describe('MAC-Adressen', () => {
     expect(() => normalizeMac('xyz')).toThrow(/MAC/);
   });
 
-  it('erzeugt eindeutige, lokal verwaltete Unicast-Adressen, reproduzierbar mit Seed', () => {
+  it('erzeugt eindeutige Adressen nach der Regel des Originals, reproduzierbar mit Seed', () => {
     const used = new Set<string>();
     const a = generateMac(createRng(42), used);
     const b = generateMac(createRng(42), used);
     expect(a).toBe(b);
-    expect(a.startsWith('02:')).toBe(true);
+    // Information.holeFreieMACAdresse: jedes Oktett Random.nextInt(255) → 0 … 254, nie FF
+    const rng = createRng(7);
+    for (let i = 0; i < 300; i++) {
+      const mac = generateMac(rng, used);
+      expect(mac.split(':').every((o) => parseInt(o, 16) <= 254)).toBe(true);
+    }
     used.add(a);
     const c = generateMac(createRng(42), used);
     expect(c).not.toBe(a);

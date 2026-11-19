@@ -31,6 +31,11 @@ test('Gerät per Tastatur hinzufügen, umbenennen, rückgängig machen', async (
   await expect(nodes(page)).toHaveCount(4);
   const name = page.getByTestId('device-name');
   await expect(name).toHaveValue('Router1');
+  // Original: neuer Router mit 2 Schnittstellen, erweiterbar bis 8
+  await expect(page.locator('[data-testid^="iface-"]')).toHaveCount(2);
+  await page.getByTestId('router-add-interface').click();
+  await expect(page.locator('[data-testid^="iface-"]')).toHaveCount(3);
+  await expect(page.getByTestId('ip-Gi0/2')).toHaveValue('192.168.0.10');
   await name.fill('Kernrouter');
   await name.press('Enter');
   await expect(page.locator('.react-flow__node', { hasText: 'Kernrouter' })).toBeVisible();
@@ -38,7 +43,8 @@ test('Gerät per Tastatur hinzufügen, umbenennen, rückgängig machen', async (
   await page.locator('.react-flow__pane').click({ position: { x: 20, y: 20 } });
   await page.keyboard.press('Control+z');
   await expect(page.locator('.react-flow__node', { hasText: 'Router1' })).toBeVisible();
-  await page.keyboard.press('Control+z');
+  await page.keyboard.press('Control+z'); // Schnittstelle hinzufügen
+  await page.keyboard.press('Control+z'); // Router anlegen
   await expect(nodes(page)).toHaveCount(3);
   await page.keyboard.press('Control+y');
   await expect(nodes(page)).toHaveCount(4);
@@ -50,14 +56,14 @@ test('Gerät per Drag & Drop ablegen und mit dem Kabel-Werkzeug verbinden', asyn
   });
   await expect(nodes(page)).toHaveCount(4);
   await page.keyboard.press('k');
-  await page.locator('.react-flow__node', { hasText: 'PC3' }).click();
+  await page.locator('.react-flow__node', { hasText: 'Rechner3' }).click();
   await page.locator('.react-flow__node', { hasText: 'Switch1' }).click();
   await expect(edges(page)).toHaveCount(3);
   await page.keyboard.press('Escape');
 });
 
 test('ungültige IP-Adresse wird abgelehnt', async ({ page }) => {
-  await page.locator('.react-flow__node', { hasText: 'PC1' }).click();
+  await page.locator('.react-flow__node', { hasText: 'Rechner1' }).click();
   const ip = page.getByTestId('ip-eth0');
   await ip.fill('192.168.0.300');
   await ip.press('Enter');

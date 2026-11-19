@@ -35,6 +35,27 @@ export const deCH = {
   'device.nas': 'Storage (NAS)',
   'device.vmhost': 'VM-Host',
 
+  // Namen neuer Geräte (Original: MessagesBundle_de_DE hw_*_msg); eine Nummer wird angehängt.
+  'deviceName.pc': 'Rechner',
+  'deviceName.notebook': 'Notebook',
+  'deviceName.switch': 'Switch',
+  'deviceName.router': 'Router',
+  'deviceName.gateway': 'Heimrouter',
+  'deviceName.server': 'Server',
+  'deviceName.l3switch': 'L3Switch',
+  'deviceName.tor': 'ToR',
+  'deviceName.spine': 'Spine',
+  'deviceName.firewall': 'FW',
+  'deviceName.loadbalancer': 'LB',
+  'deviceName.nas': 'NAS',
+  'deviceName.vmhost': 'VMHost',
+
+  'panel.addInterface': 'Schnittstelle hinzufügen',
+  'panel.removeInterface': 'Letzte Schnittstelle entfernen',
+  'panel.tooManyInterfaces': 'Maximal 8 Schnittstellen erlaubt!',
+  'panel.tooFewInterfaces': 'Mindestens eine Schnittstelle ist nötig.',
+  'panel.swapHint': 'Ist der gewählte Port belegt, werden die Verbindungen getauscht.',
+
   'canvas.empty':
     'Ziehe Geräte aus der Palette hierher. Verbinde sie mit dem Kabel-Werkzeug (Taste K) oder ziehe vom Punkt am Gerät zu einem anderen Gerät.',
   'canvas.cableActive': 'Kabel-Werkzeug aktiv: erstes Gerät anklicken, dann das zweite. Esc beendet.',

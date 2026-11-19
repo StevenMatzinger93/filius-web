@@ -8,8 +8,9 @@ Bis zur Antwort gilt jeweils der genannte **Vorschlag**.
 - **Lizenz:** vorläufig GPL-3.0-or-later gesetzt (Vorschlag aus Frage 1 unten). Bitte bestätigen oder ändern.
 - **Startinhalt:** Beim ersten Öffnen erscheint ein kleines Beispielnetz (2 Rechner + Switch). Soll die App
   stattdessen leer starten?
-- **Adressvorschlag:** Neue Endgeräte erhalten fortlaufend 192.168.0.10, .11, … (Filius: alle .10).
-  Passt das didaktisch, oder sollen Lernende bewusst selbst Adressen vergeben (Feld leer)?
+- **Adressvorschlag:** Wie im Original erhält jede neue Netzwerkkarte 192.168.0.10/24
+  (NetzwerkInterface.<init>); Lernende müssen Adressen also selbst anpassen. Falls fortlaufende
+  Vorschläge (.10, .11, …) gewünscht sind, bitte melden.
 
 ## Nach Phase 1 (Analyse)
 

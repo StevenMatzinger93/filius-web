@@ -50,8 +50,10 @@ mit Portnamen an beiden Enden. `onlyRenderVisibleElements` hält grosse Netze (2
 
 Siehe [`../MECHANICS.md`](../MECHANICS.md). Bisher umgesetzt:
 
-- Neue Endgeräte erhalten fortlaufende Adressen ab 192.168.0.10 statt alle dieselbe.
-- MAC-Adressen sind lokal verwaltete Unicast-Adressen (`02:…`).
-- Die Subnetzmaske 0.0.0.0 ist gültig (für Default-Routen); das Original lehnt sie ab.
+- Standardwerte (192.168.0.10/24 je Netzwerkkarte, Heimrouter-WAN 42.0.0.10/8, 24 Switch-Ports,
+  Router mit 2 bis 8 Schnittstellen, MAC-Regel, Tausch beim Umstecken) kommen aus dem Original
+  (`src/engine/model/original.ts`, Fundstellen in `MECHANICS.md`).
+- Gerätenamen bekommen eine Nummer (Original: nur Typname, Doppelnamen möglich).
+- MAC-Zufall kommt aus dem Projekt-Seed statt aus `java.util.Random`.
 - Ungültige Eingaben, die das Original wegen zu grosszügiger Prüfmuster durchliess
-  (z. B. «.1.2.3» oder MAC mit «G»), werden abgelehnt.
+  (z. B. «.1.2.3», führende Nullen oder MAC mit «G»), werden abgelehnt.

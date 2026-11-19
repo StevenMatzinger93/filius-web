@@ -2,57 +2,178 @@
   "version": 1,
   "values": [
     {
-      "name": "link delay factor default",
-      "group": "timing",
-      "value": 10,
-      "source": "filius.jar Verbindung.<clinit>"
+      "name": "installer entry (NSIS 2.50, parses /S /NCRC /D=)",
+      "group": "program",
+      "value": "installer only",
+      "source": "Filius-Setup_with-JRE-2.14.0.exe function 0x40310d"
     },
     {
-      "name": "link delay factor range",
-      "group": "timing",
-      "value": "1..100",
-      "source": "filius.jar Verbindung.setzeVerzoegerungsFaktor"
+      "name": "installer payload integrity check",
+      "group": "program",
+      "value": "NullsoftInst + CRC",
+      "source": "Filius-Setup_with-JRE-2.14.0.exe function 0x402c38"
     },
+    {
+      "name": "launcher main class",
+      "group": "program",
+      "value": "filius.Main",
+      "source": "Filius.exe function 0x4034b3 (resource 0x427ff8)"
+    },
+    {
+      "name": "launcher heap sizing",
+      "group": "program",
+      "value": "from free physical memory",
+      "source": "Filius.exe function 0x402e1f"
+    },
+
+    {
+      "name": "default nic ip",
+      "group": "devices",
+      "value": "192.168.0.10",
+      "source": "filius.jar NetzwerkInterface.<init> @0x0027"
+    },
+    {
+      "name": "default nic mask",
+      "group": "devices",
+      "value": "255.255.255.0",
+      "source": "filius.jar NetzwerkInterface.<init> @0x002d"
+    },
+    {
+      "name": "default nic gateway",
+      "group": "devices",
+      "value": "",
+      "source": "filius.jar NetzwerkInterface.<init> @0x0033"
+    },
+    {
+      "name": "default nic dns",
+      "group": "devices",
+      "value": "",
+      "source": "filius.jar NetzwerkInterface.<init> @0x0039"
+    },
+    {
+      "name": "mac octet range",
+      "group": "devices",
+      "value": "0..254",
+      "source": "filius.jar Information.holeFreieMACAdresse @0x001c (nextInt(255))"
+    },
+    {
+      "name": "mac must be unique and not broadcast",
+      "group": "devices",
+      "value": true,
+      "source": "filius.jar Information.macPruefen @0x001b/@0x002a"
+    },
+    { "name": "switch ports", "group": "devices", "value": 24, "source": "filius.jar Switch.<init> @0x0022" },
+    {
+      "name": "home router wan ip",
+      "group": "devices",
+      "value": "42.0.0.10",
+      "source": "filius.jar Gateway.<init> @0x0012"
+    },
+    {
+      "name": "home router wan mask",
+      "group": "devices",
+      "value": "255.0.0.0",
+      "source": "filius.jar Gateway.<init> @0x001b"
+    },
+    {
+      "name": "home router lan ip",
+      "group": "devices",
+      "value": "192.168.0.10",
+      "source": "filius.jar Gateway.<init> (LAN untouched) + NetzwerkInterface.<init> @0x0027"
+    },
+    {
+      "name": "home router interfaces",
+      "group": "devices",
+      "value": 2,
+      "source": "filius.jar Gateway.<init> @0x000a"
+    },
+    {
+      "name": "router interfaces when created",
+      "group": "devices",
+      "value": 2,
+      "source": "filius.jar GUIContainer.neuerKnoten (choices 2..8, default 2)"
+    },
+    {
+      "name": "router max interfaces",
+      "group": "devices",
+      "value": 8,
+      "source": "filius.jar JConnectionsDialog$2.actionPerformed @0x0009"
+    },
+    {
+      "name": "router min interfaces",
+      "group": "devices",
+      "value": 1,
+      "source": "filius.jar Vermittlungsrechner.<init> @0x0022"
+    },
+    {
+      "name": "re-plug onto busy port swaps connections",
+      "group": "cabling",
+      "value": true,
+      "source": "filius.jar JConnectionsDialog$2.actionPerformed @0x00c3 (swapConnection)"
+    },
+    {
+      "name": "new device name",
+      "group": "devices",
+      "value": "type name (Rechner, Notebook, Switch, Router, Heimrouter) + number",
+      "source": "filius.jar Rechner.<init> @0x0020, Switch.<init> @0x003e, Vermittlungsrechner.<init> @0x003d, Gateway.<init> @0x0037"
+    },
+    {
+      "name": "subnet mask rule",
+      "group": "validation",
+      "value": "contiguous ones, at least one",
+      "source": "filius.jar EingabenUeberpruefung.<clinit> @0x0018 and @0x0070 (^11*0*$)"
+    },
+    {
+      "name": "ip address rule",
+      "group": "validation",
+      "value": "4 octets 0..255",
+      "source": "filius.jar EingabenUeberpruefung.<clinit> @0x0008"
+    },
+    {
+      "name": "mac address rule",
+      "group": "validation",
+      "value": "6 hex pairs separated by ':'",
+      "source": "filius.jar EingabenUeberpruefung.<clinit> @0x0078"
+    },
+    {
+      "name": "invalid input colour",
+      "group": "validation",
+      "value": "rgb(255,20,20)",
+      "source": "filius.jar EingabenUeberpruefung.<clinit> @0x0094"
+    },
+    {
+      "name": "datacenter device default addressing",
+      "group": "devices",
+      "value": "server-like: first nic 192.168.0.10/24; L3/firewall: none",
+      "estimated": true
+    },
+
     {
       "name": "link delay per frame",
       "group": "timing",
       "value": 50,
       "unit": "ms",
-      "source": "filius.jar Verbindung.holeVerzoegerung (factor x 5 ms)"
+      "source": "filius.jar Verbindung.holeVerzoegerung (factor 10 x 5 ms)"
     },
     {
       "name": "round trip time base",
       "group": "timing",
       "value": 2500,
       "unit": "ms",
-      "source": "filius.jar Verbindung.holeRTT (50 x delay x rttFactor)"
+      "source": "filius.jar Verbindung.holeRTT"
     },
-    { "name": "switch ports", "group": "devices", "value": 24, "source": "filius.jar Switch.<init>" },
     {
       "name": "mac table aging",
       "group": "switch",
       "value": 300,
       "unit": "s",
-      "source": "filius.jar SwitchFirmware.<init> retentionTime 300000 ms"
-    },
-    {
-      "name": "mac table check interval",
-      "group": "switch",
-      "value": 1,
-      "unit": "s",
-      "source": "filius.jar SwitchFirmware.starten"
+      "source": "filius.jar SwitchFirmware.<init>"
     },
     {
       "name": "arp request attempts",
       "group": "arp",
       "value": 2,
       "source": "filius.jar IP.sendeUnicastLokal"
-    },
-    {
-      "name": "arp cache expiry",
-      "group": "arp",
-      "value": "never (only arp -d)",
-      "source": "filius.jar ARP.hinzuARPTabellenEintrag"
     },
     {
       "name": "ip ttl default",
@@ -62,31 +183,6 @@
       "source": "filius.jar TransportProtokoll.run / ICMP.sendeICMP"
     },
     {
-      "name": "broadcast ttl",
-      "group": "ipv4",
-      "value": 1,
-      "unit": "hops",
-      "source": "filius.jar IP.sendBroadcastOverNic"
-    },
-    {
-      "name": "route selection",
-      "group": "ipv4",
-      "value": "longest prefix, first row wins on tie",
-      "source": "filius.jar Weiterleitungstabelle.determineRouteFromStaticRoutingTable"
-    },
-    {
-      "name": "default nic address",
-      "group": "devices",
-      "value": "192.168.0.10/24",
-      "source": "filius.jar NetzwerkInterface.<init>"
-    },
-    {
-      "name": "nat gateway wan default",
-      "group": "devices",
-      "value": "42.0.0.10/8",
-      "source": "filius.jar Gateway.<init>"
-    },
-    {
       "name": "tcp mss",
       "group": "tcp",
       "value": 1460,
@@ -94,56 +190,12 @@
       "source": "filius.jar TCPSocket.MSS"
     },
     {
-      "name": "tcp send attempts",
-      "group": "tcp",
-      "value": 3,
-      "source": "filius.jar TCPSocket.MAX_SENDEVERSUCHE"
-    },
-    {
-      "name": "tcp timeout",
-      "group": "tcp",
-      "value": "3 x RTT",
-      "source": "filius.jar TCPSocket.defaultTimeout"
-    },
-    {
-      "name": "tcp initial sequence step",
-      "group": "tcp",
-      "value": 1000000,
-      "source": "filius.jar TCPSocket.<init>"
-    },
-    {
-      "name": "ephemeral port start",
-      "group": "transport",
-      "value": 49152,
-      "source": "filius.jar TransportProtokoll.sucheFreienPort"
-    },
-    { "name": "dhcp server port", "group": "dhcp", "value": 67, "source": "filius.jar DHCPServer" },
-    { "name": "dhcp client port", "group": "dhcp", "value": 68, "source": "filius.jar DHCPClient" },
-    {
       "name": "dhcp lease",
       "group": "dhcp",
       "value": 24,
       "unit": "h",
       "source": "filius.jar DHCPServer.DEFAULT_LEASE_TIME_MILLIS"
     },
-    {
-      "name": "dhcp link-local fallback after errors",
-      "group": "dhcp",
-      "value": 5,
-      "source": "filius.jar DHCPClient.configure"
-    },
-    { "name": "dns port", "group": "dns", "value": 53, "source": "filius.jar DNSServer" },
-    {
-      "name": "dns record types",
-      "group": "dns",
-      "value": "A, MX, NS",
-      "source": "filius.jar ResourceRecord"
-    },
-    { "name": "http port", "group": "http", "value": 80, "source": "filius.jar WebServer" },
-    { "name": "smtp port", "group": "mail", "value": 25, "source": "filius.jar EmailServer" },
-    { "name": "pop3 port", "group": "mail", "value": 110, "source": "filius.jar EmailServer" },
-    { "name": "rip port", "group": "rip", "value": 520, "source": "filius.jar RIPServer" },
-    { "name": "rip infinity", "group": "rip", "value": 16, "unit": "hops", "source": "filius.jar RIPTable" },
     {
       "name": "rip update interval",
       "group": "rip",
@@ -158,18 +210,7 @@
       "unit": "s",
       "source": "filius.jar RIPTable.TIMEOUT"
     },
-    {
-      "name": "firewall default policy",
-      "group": "firewall",
-      "value": "drop",
-      "source": "filius.jar Firewall"
-    },
-    {
-      "name": "firewall evaluation",
-      "group": "firewall",
-      "value": "first matching rule",
-      "source": "filius.jar Firewall"
-    },
+    { "name": "rip infinity", "group": "rip", "value": 16, "unit": "hops", "source": "filius.jar RIPTable" },
     {
       "name": "ping count",
       "group": "cli",
@@ -189,12 +230,7 @@
       "value": 20,
       "source": "filius.jar Terminal.traceroute"
     },
-    {
-      "name": "traceroute probes per hop",
-      "group": "cli",
-      "value": 3,
-      "source": "filius.jar Terminal.traceroute"
-    },
+
     { "name": "vlan id range", "group": "vlan", "value": "1..4094", "estimated": true },
     { "name": "dot1q tpid", "group": "vlan", "value": "0x8100", "estimated": true }
   ]

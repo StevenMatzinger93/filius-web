@@ -1,6 +1,7 @@
 import { applyPatches, enablePatches, produceWithPatches, type Patch } from 'immer';
 import { create } from 'zustand';
 import { addDevice, createProject, pasteDevices } from '../engine/model/factory.ts';
+import { translatorFor, useLocale } from '../i18n/index.ts';
 import type { DeviceConfig, DeviceType, LinkConfig, Position, Project } from '../engine/model/project.ts';
 import {
   connect,
@@ -139,7 +140,9 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
   addDevice(type, position) {
     let id = '';
     get().change('add-device', (draft) => {
-      id = addDevice(draft, type, position).id;
+      // Name wie im Original nach dem Gerätetyp, in der eingestellten Sprache («Rechner1», «Computer1»).
+      const prefix = translatorFor(useLocale.getState().locale)(`deviceName.${type}`);
+      id = addDevice(draft, type, position, prefix).id;
     });
     set({ selection: { deviceIds: [id], linkIds: [] } });
     return id;

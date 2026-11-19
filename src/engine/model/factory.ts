@@ -1,5 +1,6 @@
-import { formatIp, generateMac, isValidIp, parseIp } from './address.ts';
+import { generateMac, isValidIp } from './address.ts';
 import { isEndDevice, specOf } from './catalog.ts';
+import { DEFAULT_NIC_IP, DEFAULT_NIC_PREFIX, GATEWAY_WAN_IP, GATEWAY_WAN_PREFIX } from './original.ts';
 import type { DeviceConfig, DeviceType, InterfaceConfig, Position, Project } from './project.ts';
 import { PROJECT_SCHEMA_ID, PROJECT_SCHEMA_VERSION } from './project.ts';
 import { createRng } from './random.ts';
@@ -27,7 +28,12 @@ export function usedMacs(project: Project): Set<string> {
   return new Set(project.devices.flatMap((d) => d.interfaces.map((i) => i.mac)));
 }
 
-/** Freier Name «PC1», «PC2» … pro Präfix. */
+/**
+ * Freier Name «Rechner1», «Rechner2» … pro Präfix.
+ * Im Original heisst jedes neue Gerät nur nach seinem Typ («Rechner», Rechner.<init> @0x0020), Namen
+ * dürfen sich dort doppeln. Wir hängen eine Nummer an, weil Befehlszeile und Prüfregeln Geräte über
+ * ihren Namen ansprechen (dokumentierte Abweichung).
+ */
 export function uniqueName(project: Project, prefix: string): string {
   const taken = new Set(project.devices.map((d) => d.name.toLowerCase()));
   for (let n = 1; ; n++) {
@@ -36,41 +42,51 @@ export function uniqueName(project: Project, prefix: string): string {
   }
 }
 
-/**
- * Vorschlag für die IP eines neuen Endgeräts. Filius gibt jedem neuen Rechner 192.168.0.10/24
- * (NetzwerkInterface.<init>), was zu Adresskonflikten führt. Wir zählen ab .10 hoch und nehmen
- * die erste freie Adresse im Netz 192.168.0.0/24 (dokumentierte Abweichung).
- */
-export function suggestHostIp(project: Project): string {
-  const taken = new Set(
-    project.devices.flatMap((d) => d.interfaces.flatMap((i) => (i.ipv4 ? [i.ipv4.address] : []))),
-  );
-  const base = parseIp('192.168.0.0');
-  for (let host = 10; host < 255; host++) {
-    const candidate = formatIp(base + host);
-    if (!taken.has(candidate)) return candidate;
-  }
-  return '192.168.0.10';
+/** Präfix eines vorhandenen Namens ohne angehängte Nummer («Rechner12» → «Rechner»). */
+export function namePrefixOf(name: string): string {
+  return name.replace(/\d+$/, '') || name;
 }
 
-function makeInterfaces(project: Project, type: DeviceType): InterfaceConfig[] {
-  const spec = specOf(type);
-  const rng = createRng((project.seed ^ Math.imul(project.nextId, 0x9e3779b1)) >>> 0);
-  const used = usedMacs(project);
-  return spec.ports.map((name) => {
-    const mac = generateMac(rng, used);
-    used.add(mac);
-    return { id: allocateId(project, 'if'), name, mac, enabled: true, ipv4: null };
-  });
+/** Neue Netzwerkkarte mit den Standardwerten aus NetzwerkInterface.<init>. */
+export function newInterface(
+  project: Project,
+  name: string,
+  rngSalt: number,
+  withDefaultIp: boolean,
+): InterfaceConfig {
+  const rng = createRng((project.seed ^ Math.imul(project.nextId + rngSalt, 0x9e3779b1)) >>> 0);
+  const mac = generateMac(rng, usedMacs(project));
+  return {
+    id: allocateId(project, 'if'),
+    name,
+    mac,
+    enabled: true,
+    ipv4: withDefaultIp ? { address: DEFAULT_NIC_IP, prefix: DEFAULT_NIC_PREFIX } : null,
+  };
+}
+
+/**
+ * Welche Anschlüsse eine Standard-IP bekommen. Im Original erhält jede Netzwerkkarte 192.168.0.10/24
+ * (Rechner, Notebook, Vermittlungsrechner, Heimrouter-LAN); Switch-Ports haben keine IP.
+ * Für die neuen Rechenzentrums-Geräte gibt es kein Original: Server-artige Geräte bekommen die
+ * Standard-IP auf der ersten Karte, Layer-3-Geräte und Firewall starten ohne IP (geschätzt).
+ */
+function defaultIpFor(type: DeviceType, index: number): boolean {
+  if (type === 'pc' || type === 'notebook' || type === 'router' || type === 'gateway') return true;
+  return isEndDevice(type) && index === 0;
 }
 
 /** Neues Gerät mit Standardwerten anlegen und ins Projekt einfügen. */
-export function addDevice(project: Project, type: DeviceType, position: Position): DeviceConfig {
-  const spec = specOf(type);
+export function addDevice(
+  project: Project,
+  type: DeviceType,
+  position: Position,
+  namePrefix: string = specOf(type).namePrefix,
+): DeviceConfig {
   const device: DeviceConfig = {
     id: allocateId(project, 'dev'),
     type,
-    name: uniqueName(project, spec.namePrefix),
+    name: uniqueName(project, namePrefix),
     position: { x: Math.round(position.x), y: Math.round(position.y) },
     interfaces: [],
     gateway: '',
@@ -78,18 +94,16 @@ export function addDevice(project: Project, type: DeviceType, position: Position
     dhcpClient: false,
     note: '',
   };
-  device.interfaces = makeInterfaces(project, type);
-  const first = device.interfaces[0];
-  if (isEndDevice(type) && first) {
-    first.ipv4 = { address: suggestHostIp(project), prefix: 24 };
-  }
-  if (type === 'gateway') {
-    // Werte aus Gateway.<init> des Originals: WAN 42.0.0.10/8; LAN als Gateway des Heimnetzes.
-    const [wan, lan] = device.interfaces;
-    if (wan) wan.ipv4 = { address: '42.0.0.10', prefix: 8 };
-    if (lan) lan.ipv4 = { address: '192.168.0.1', prefix: 24 };
-  }
   project.devices.push(device);
+  // Einzeln anhängen, damit jede neue MAC auch gegen die Karten desselben Geräts geprüft wird.
+  specOf(type).ports.forEach((portName, index) => {
+    device.interfaces.push(newInterface(project, portName, index, defaultIpFor(type, index)));
+  });
+  if (type === 'gateway') {
+    // Gateway.<init>: nur die WAN-Seite wird gesetzt; LAN behält 192.168.0.10/24.
+    const wan = device.interfaces[0];
+    if (wan) wan.ipv4 = { address: GATEWAY_WAN_IP, prefix: GATEWAY_WAN_PREFIX };
+  }
   return device;
 }
 
@@ -113,7 +127,7 @@ export function pasteDevices(
   for (const source of devices) {
     const copy: DeviceConfig = structuredClone(source);
     copy.id = allocateId(project, 'dev');
-    copy.name = uniqueName(project, specOf(source.type).namePrefix);
+    copy.name = uniqueName(project, namePrefixOf(source.name));
     copy.position = { x: source.position.x + offset.x, y: source.position.y + offset.y };
     for (const iface of copy.interfaces) {
       const newId = allocateId(project, 'if');

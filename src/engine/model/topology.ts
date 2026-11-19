@@ -81,14 +81,21 @@ export function removeLinks(project: Project, linkIds: ReadonlySet<string>): voi
   project.links = project.links.filter((l) => !linkIds.has(l.id));
 }
 
-/** Kabel auf einen anderen Port desselben Geräts umstecken. */
+/**
+ * Kabel auf einen anderen Port desselben Geräts umstecken. Ist der Zielport belegt, werden die beiden
+ * Verbindungen getauscht – Regel des Originals (JConnectionsDialog$2.actionPerformed → swapConnection
+ * @0x00c3, Hilfetext «Sollte die Zielschnittstelle bereits belegt sein, so werden die Verbindungen vertauscht»).
+ */
 export function movePort(project: Project, linkId: string, side: 'a' | 'b', interfaceId: string): boolean {
   const link = project.links.find((l) => l.id === linkId);
   if (!link) return false;
   const device = findDevice(project, link[side].deviceId);
   if (!device?.interfaces.some((i) => i.id === interfaceId)) return false;
   const occupant = linkAt(project, interfaceId);
-  if (occupant && occupant.id !== linkId) return false;
+  if (occupant && occupant.id !== linkId) {
+    const otherSide = occupant.a.interfaceId === interfaceId ? 'a' : 'b';
+    occupant[otherSide] = { deviceId: device.id, interfaceId: link[side].interfaceId };
+  }
   link[side] = { deviceId: device.id, interfaceId };
   return true;
 }

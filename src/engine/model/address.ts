@@ -1,3 +1,4 @@
+import { MAC_OCTET_MAX } from './original.ts';
 import type { Rng } from './random.ts';
 
 /** IPv4-Adresse als vorzeichenlose 32-Bit-Zahl. */
@@ -30,9 +31,8 @@ export function prefixToMask(prefix: number): Ip4 {
 }
 
 /**
- * Maske → Präfixlänge. Wie im Original sind nur zusammenhängende Einsen gültig;
- * anders als im Original ist 0.0.0.0 (/0) erlaubt, weil es für Default-Routen gebraucht wird.
- * Gibt null zurück, wenn die Maske ungültig ist.
+ * Maske → Präfixlänge; nur zusammenhängende Einsen sind gültig. 0.0.0.0 (/0) liefert 0 – das braucht
+ * die Routingtabelle für Default-Routen. Gibt null zurück, wenn die Maske ungültig ist.
  */
 export function maskToPrefix(mask: Ip4): number | null {
   const inverted = ~mask >>> 0;
@@ -42,8 +42,14 @@ export function maskToPrefix(mask: Ip4): number | null {
   return prefix;
 }
 
+/**
+ * Subnetzmaske einer Schnittstelle, Regel des Originals (EingabenUeberpruefung @0x0070, Muster
+ * «^11*0*$» auf die Binärform): mindestens eine Eins, danach nur Nullen – 0.0.0.0 ist ungültig.
+ */
 export function isValidMask(text: string): boolean {
-  return isValidIp(text) && maskToPrefix(parseIp(text)) !== null;
+  if (!isValidIp(text)) return false;
+  const prefix = maskToPrefix(parseIp(text));
+  return prefix !== null && prefix >= 1;
 }
 
 export function parseMask(text: string): number {
@@ -89,13 +95,16 @@ export function normalizeMac(text: string): string {
 }
 
 /**
- * Neue, eindeutige MAC-Adresse. Abweichung vom Original (dort 6 beliebige Zufallsoktette):
- * Das erste Oktett ist «lokal verwaltet, Unicast» (02), wie bei virtuellen Geräten üblich.
+ * Neue, eindeutige MAC-Adresse nach der Regel des Originals (Information.holeFreieMACAdresse):
+ * sechs Oktette, jedes Random.nextInt(255) = 0 … 254, zweistellig hex. Eine Adresse wird neu gezogen,
+ * wenn sie schon vergeben ist oder ff:ff:ff:ff:ff:ff lautet (Information.macPruefen); Letzteres ist
+ * wegen Oktett ≤ 254 ohnehin ausgeschlossen. Anzeige in Grossbuchstaben wie NetzwerkInterface.getMac.
+ * Einziger Unterschied: Der Zufall kommt aus dem Projekt-Seed statt aus java.util.Random (Determinismus).
  */
 export function generateMac(rng: Rng, used: ReadonlySet<string>): string {
   for (;;) {
-    const octets = [0x02, ...Array.from({ length: 5 }, () => rng.int(0, 255))];
+    const octets = Array.from({ length: 6 }, () => rng.int(0, MAC_OCTET_MAX));
     const mac = octets.map((o) => o.toString(16).padStart(2, '0').toUpperCase()).join(':');
-    if (!used.has(mac)) return mac;
+    if (!used.has(mac) && mac !== BROADCAST_MAC) return mac;
   }
 }

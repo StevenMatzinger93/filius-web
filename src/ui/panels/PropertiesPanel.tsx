@@ -1,6 +1,8 @@
 import { formatMask } from '../../engine/model/address.ts';
 import { isEndDevice, portsCarryIp } from '../../engine/model/catalog.ts';
 import {
+  addRouterInterface,
+  removeRouterInterface,
   renameDevice,
   setDhcpClient,
   setDns,
@@ -44,6 +46,10 @@ function errorText(t: TFunction, error: EditError): string {
       return t('panel.duplicateMac');
     case 'invalid-name':
       return t('panel.invalidName');
+    case 'too-many-interfaces':
+      return t('panel.tooManyInterfaces');
+    case 'too-few-interfaces':
+      return t('panel.tooFewInterfaces');
     default:
       return t('connect.unknown');
   }
@@ -200,6 +206,7 @@ function DeviceProperties({ device, project }: { device: DeviceConfig; project: 
           {device.interfaces.map((iface) => (
             <InterfaceEditor key={iface.id} device={device} iface={iface} project={project} />
           ))}
+          {device.type === 'router' && <RouterInterfaceButtons device={device} />}
         </section>
       ) : (
         <SwitchPorts device={device} project={project} />
@@ -232,9 +239,10 @@ function LinkProperties({ link, project }: { link: LinkConfig; project: Project 
         const end = link[side];
         const device = project.devices.find((d) => d.id === end.deviceId);
         if (!device) return null;
-        const options = device.interfaces.filter((i) => {
+        // Alle Ports wählbar: belegte werden wie im Original getauscht (JConnectionsDialog.swapConnection).
+        const options = device.interfaces.map((i) => {
           const occupant = linkAt(project, i.id);
-          return !occupant || occupant.id === link.id;
+          return { iface: i, busy: occupant !== undefined && occupant.id !== link.id };
         });
         const selectId = `link-end-${side}`;
         return (
@@ -248,15 +256,52 @@ function LinkProperties({ link, project }: { link: LinkConfig; project: Project 
               value={end.interfaceId}
               onChange={(e) => change('move-port', (d) => void movePort(d, link.id, side, e.target.value))}
             >
-              {options.map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.name}
+              {options.map(({ iface, busy }) => (
+                <option key={iface.id} value={iface.id}>
+                  {busy ? `${iface.name} ⇄` : iface.name}
                 </option>
               ))}
             </select>
           </div>
         );
       })}
+      <p className="text-xxs text-ink-soft dark:text-gray-400">{t('panel.swapHint')}</p>
+    </div>
+  );
+}
+
+/** Schnittstellen eines Routers hinzufügen/entfernen (1 … 8 wie im Original). */
+function RouterInterfaceButtons({ device }: { device: DeviceConfig }) {
+  const t = useT();
+  const change = useProjectStore((s) => s.change);
+  const setNotice = useProjectStore((s) => s.setNotice);
+  const run = (recipe: Recipe) => {
+    let error: EditError | null = null;
+    change('router-interfaces', (draft) => {
+      error = recipe(draft);
+    });
+    if (error === 'too-many-interfaces') setNotice({ kind: 'error', key: 'panel.tooManyInterfaces' });
+    if (error === 'too-few-interfaces') setNotice({ kind: 'error', key: 'panel.tooFewInterfaces' });
+  };
+  return (
+    <div className="mb-3 flex gap-2">
+      <button
+        type="button"
+        className="btn border border-gray-300 dark:border-gray-600"
+        onClick={() => run((d) => addRouterInterface(d, device.id))}
+        data-testid="router-add-interface"
+      >
+        + {t('panel.addInterface')}
+      </button>
+      <button
+        type="button"
+        className="btn border border-gray-300 dark:border-gray-600"
+        onClick={() => run((d) => removeRouterInterface(d, device.id))}
+        aria-label={t('panel.removeInterface')}
+        title={t('panel.removeInterface')}
+      >
+        −
+      </button>
     </div>
   );
 }

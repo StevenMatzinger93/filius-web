@@ -37,6 +37,27 @@ export const en: Messages = {
   'device.nas': 'Storage (NAS)',
   'device.vmhost': 'VM host',
 
+  // Names of new devices (original: MessagesBundle_en_GB hw_*_msg); a number is appended.
+  'deviceName.pc': 'Computer',
+  'deviceName.notebook': 'Notebook',
+  'deviceName.switch': 'Switch',
+  'deviceName.router': 'Router',
+  'deviceName.gateway': 'HomeRouter',
+  'deviceName.server': 'Server',
+  'deviceName.l3switch': 'L3Switch',
+  'deviceName.tor': 'ToR',
+  'deviceName.spine': 'Spine',
+  'deviceName.firewall': 'FW',
+  'deviceName.loadbalancer': 'LB',
+  'deviceName.nas': 'NAS',
+  'deviceName.vmhost': 'VMHost',
+
+  'panel.addInterface': 'Add interface',
+  'panel.removeInterface': 'Remove last interface',
+  'panel.tooManyInterfaces': 'At most 8 interfaces allowed!',
+  'panel.tooFewInterfaces': 'At least one interface is required.',
+  'panel.swapHint': 'If the chosen port is in use, the connections are swapped.',
+
   'canvas.empty':
     'Drag devices here from the palette. Connect them with the cable tool (key K) or drag from the dot on a device to another device.',
   'canvas.cableActive': 'Cable tool active: click the first device, then the second. Esc ends.',
