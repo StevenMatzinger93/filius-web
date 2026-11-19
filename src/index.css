@@ -1,0 +1,107 @@
+@import 'tailwindcss';
+@import '@xyflow/react/dist/style.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Theme-Tokens. Farben aus dem Original (filius.jar):
+ * Kabel (64,64,64), Kabel aktiv (0,255,64), Schichtfarben des Datenaustauschs seit 2.9,
+ * Desktop-Verlauf dunkelblau → hellblau. Die Arbeitsfläche ist weiss mit Punkteraster.
+ */
+@theme {
+  --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Cascadia Mono', Consolas, 'Courier New', monospace;
+
+  --text-xxs: 0.6875rem;
+
+  --color-cable: #404040;
+  --color-cable-active: #00ff40;
+  --color-cable-drop: #e53935;
+  --color-cable-wireless: #c0c0c0;
+
+  --color-layer-l2: #c9c9c9;
+  --color-layer-l2-mid: #dbdbdb;
+  --color-layer-l2-light: #f2f2f2;
+  --color-layer-l3: #8faadc;
+  --color-layer-l3-mid: #b4c6e7;
+  --color-layer-l3-light: #d9e2f3;
+  --color-layer-l4: #f4b183;
+  --color-layer-l4-mid: #f7caac;
+  --color-layer-l4-light: #fbe4d5;
+  --color-layer-l7: #ffd966;
+  --color-layer-l7-mid: #ffe599;
+  --color-layer-l7-light: #fff2cc;
+  --color-muted-text: #a6a6a6;
+
+  --color-desktop-from: #0b1d3a;
+  --color-desktop-to: #5aa0e6;
+
+  --color-accent: #1d6fd6;
+  --color-accent-soft: #dbe8fb;
+  --color-danger: #c62828;
+  --color-ok: #2e7d32;
+
+  --color-surface: #ffffff;
+  --color-surface-2: #f3f4f6;
+  --color-surface-3: #e5e7eb;
+  --color-ink: #1f2937;
+  --color-ink-soft: #4b5563;
+
+  --breakpoint-desktop: 80rem;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+    min-width: 1280px;
+    font-size: 14px;
+  }
+  .dark body {
+    background: #111827;
+    color: #e5e7eb;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 text-sm font-medium
+      text-ink hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-100 dark:hover:bg-gray-700;
+  }
+  .btn-active {
+    @apply border-accent bg-accent-soft text-accent dark:bg-blue-950 dark:text-blue-200;
+  }
+  .field {
+    @apply w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-ink
+      aria-[invalid=true]:border-danger dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100;
+  }
+  .field-label {
+    @apply mb-0.5 block text-xs font-medium text-ink-soft dark:text-gray-400;
+  }
+  .panel-heading {
+    @apply mb-2 text-xs font-semibold tracking-wide text-ink-soft uppercase dark:text-gray-400;
+  }
+}
+
+/* React Flow an das Theme anpassen */
+.react-flow {
+  --xy-background-color: #ffffff;
+  --xy-edge-stroke: var(--color-cable);
+  --xy-selection-background-color: rgb(29 111 214 / 0.08);
+  --xy-selection-border: 1px dashed var(--color-accent);
+}
+.dark .react-flow {
+  --xy-background-color: #0f172a;
+  --xy-edge-stroke: #9ca3af;
+}
+.react-flow__node.selected .device-node-frame {
+  @apply ring-2 ring-accent;
+}

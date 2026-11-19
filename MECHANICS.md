@@ -11,12 +11,12 @@ IEEE 802.1Q und sind in `mechanics.json` als `estimated` markiert, weil das Orig
 
 ## Abweichungen, die die neue Engine bewusst macht (echtes Verhalten statt Filius)
 
-| Thema | Filius | Neue Engine | Grund |
-|---|---|---|---|
-| Zeit | echte Threads, Kabelverzögerung 50 ms | virtuelle Zeit, gleiche Standardverzögerung 50 ms pro Hop | deterministisch, testbar |
-| Switch sendet an Eingangsport zurück | ja | nein (Filterung wie IEEE 802.1D) | echtes Verhalten |
-| ARP-Cache | läuft nie ab | Alterung 4 h (Cisco-Standard), `arp -d` bleibt | echtes Verhalten |
-| TCP-Port geschlossen | stilles Verwerfen | RST | echtes Verhalten, sichtbarer Lerneffekt |
-| Hosts leiten ICMP weiter | möglich (unsicher) | nein | echtes Verhalten |
-| DHCP-Relay | nicht vorhanden | `ip helper-address` (giaddr) | Auftrag |
-| Firewall und ICMP | ICMP nur per Schalter | ICMP als Protokoll in Regeln | Auftrag (Szenario 10) |
+| Thema                                | Filius                                | Neue Engine                                               | Grund                                   |
+| ------------------------------------ | ------------------------------------- | --------------------------------------------------------- | --------------------------------------- |
+| Zeit                                 | echte Threads, Kabelverzögerung 50 ms | virtuelle Zeit, gleiche Standardverzögerung 50 ms pro Hop | deterministisch, testbar                |
+| Switch sendet an Eingangsport zurück | ja                                    | nein (Filterung wie IEEE 802.1D)                          | echtes Verhalten                        |
+| ARP-Cache                            | läuft nie ab                          | Alterung 4 h (Cisco-Standard), `arp -d` bleibt            | echtes Verhalten                        |
+| TCP-Port geschlossen                 | stilles Verwerfen                     | RST                                                       | echtes Verhalten, sichtbarer Lerneffekt |
+| Hosts leiten ICMP weiter             | möglich (unsicher)                    | nein                                                      | echtes Verhalten                        |
+| DHCP-Relay                           | nicht vorhanden                       | `ip helper-address` (giaddr)                              | Auftrag                                 |
+| Firewall und ICMP                    | ICMP nur per Schalter                 | ICMP als Protokoll in Regeln                              | Auftrag (Szenario 10)                   |
