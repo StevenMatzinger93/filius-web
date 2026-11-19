@@ -27,9 +27,20 @@ npm run preview      # dist/ lokal ansehen
 `dist/` ist rein statisch und läuft auf jedem Webserver, auf GitHub Pages oder Cloudflare Pages
 (relative Pfade, kein Backend).
 
-Optional gibt es eine Desktop-Hülle (Electron), die `dist/` lokal ausliefert und in einem eigenen
-Fenster zeigt: `npm run desktop`. Mit `npx electron . --screenshot bild.png` speichert sie ein Bild der
-App und beendet sich (für automatische Prüfungen). Die Web-App selbst braucht sie nicht.
+## Benutzen ohne Installation
+
+- **Im Browser:** <https://stevenmatzinger93.github.io/filius-web/> (wird bei jedem Hochladen auf
+  `main` automatisch neu veröffentlicht, Workflow `pages.yml`; einmalig unter
+  _Settings → Pages → Source: GitHub Actions_ einschalten).
+- **Als Windows-Programm:** `FiliusWeb-<version>-portable.exe` – eine einzelne Datei zum Verschicken,
+  Doppelklick genügt, keine Installation. Herunterladen unter _Releases_ bzw. _Actions → Windows-exe bauen
+  → Artifacts_. Selbst bauen: `npm run dist:win` (Ergebnis in `release/`).
+  Die exe ist nicht signiert; Windows zeigt beim ersten Start evtl. «Der Computer wurde durch Windows
+  geschützt» → _Weitere Informationen → Trotzdem ausführen_.
+
+Die Desktop-Hülle (Electron, `electron/main.cjs`) liefert `dist/` nur auf diesem Rechner aus und zeigt es in
+einem eigenen Fenster: `npm run desktop`. Mit `--screenshot bild.png` speichert sie ein Bild der App und
+beendet sich (für automatische Prüfungen).
 
 | Befehl                            | Zweck                                               |
 | --------------------------------- | --------------------------------------------------- |

@@ -4,5 +4,6 @@ coverage/
 playwright-report/
 test-results/
 shots/
+release/
 *.log
 .DS_Store

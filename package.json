@@ -16,17 +16,50 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "icon": "node scripts/make-icon.mjs",
+    "dist:win": "npm run build && electron-builder --win portable --x64 --publish never"
   },
-  "dependencies": {
+  "author": {
+    "name": "Steven Matzinger"
+  },
+  "homepage": "https://github.com/StevenMatzinger93/filius-web",
+  "build": {
+    "appId": "ch.filiusweb.app",
+    "productName": "Filius Web",
+    "copyright": "GPL-3.0-or-later – fachliches Vorbild: Filius (Universität Siegen)",
+    "directories": {
+      "output": "release",
+      "buildResources": "build-resources"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "icon": "build-resources/icon.png",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "FiliusWeb-${version}-portable.exe"
+    }
+  },
+  "devDependencies": {
     "@xyflow/react": "^13.0.2",
     "immer": "^11.2.10",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "zod": "^4.6.7",
-    "zustand": "^5.1.0"
-  },
-  "devDependencies": {
+    "zustand": "^5.1.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.65.1",
     "@tailwindcss/vite": "^4.3.5",
@@ -37,6 +70,7 @@
     "@vitejs/plugin-react": "^6.3.0",
     "@vitest/coverage-v8": "^5.1.1",
     "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
     "eslint": "^10.15.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.8",
