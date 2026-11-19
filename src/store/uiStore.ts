@@ -12,6 +12,7 @@ interface UiState {
   setTheme(theme: Theme): void;
   toggleCableTool(on?: boolean): void;
   setCableFrom(id: string | null): void;
+  setMode(mode: Mode): void;
 }
 
 function initialTheme(): Theme {
@@ -43,5 +44,8 @@ export const useUiStore = create<UiState>()((set, get) => ({
   },
   setCableFrom(id) {
     set({ cableFrom: id });
+  },
+  setMode(mode) {
+    set({ mode, cableTool: false, cableFrom: null });
   },
 }));

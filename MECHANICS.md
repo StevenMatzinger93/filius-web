@@ -55,14 +55,29 @@ in `filius.jar`. Gelesen wurden sie mit dem Java-Dekompiler von Craft Anything (
 | MAC mit «G»…«Z»                       | vom Muster `A-f` durchgelassen         | abgelehnt                                                                                    | Fehler im Muster                                                        |
 | Rechenzentrums-Geräte                 | existieren nicht                       | Server/NAS/VM-Host/LB: erste Karte 192.168.0.10/24; L3-Switch, ToR, Spine, Firewall: ohne IP | **geschätzt**, kein Original                                            |
 
-## 4. Werte für die nächsten Phasen
+## 4. Simulation (Phase 3) – im Bau verwendet
 
-Diese Werte wurden ebenfalls aus dem Bytecode gelesen. Bisher hat sie eine Teiluntersuchung erhoben
-(`docs/analyse/SIMULATIONSREGELN-ORIGINAL.md`). Vor der Umsetzung in Phase 3 bis 5 lese ich die
-jeweilige Methode noch einmal selbst nach; im Bau werden sie noch nicht verwendet:
+Selbst im Bytecode nachgelesen; Konstanten in `src/engine/model/original.ts`, Logik in
+`src/engine/simulation.ts` und `src/engine/cli/terminal.ts`.
 
-Kabelverzögerung Faktor × 5 ms (Standard 50 ms, `Verbindung.holeVerzoegerung`), RTT 2500 ms
-(`Verbindung.holeRTT`), MAC-Tabellen-Alterung 300 s (`SwitchFirmware.<init>`), 2 ARP-Versuche
-(`IP.sendeUnicastLokal`), TTL 64 (`TransportProtokoll.run`, `ICMP.sendeICMP`), TCP-MSS 1460
-(`TCPSocket.MSS`), DHCP 67/68 und 24 h Lease (`DHCPServer`), RIP 30 s / 75 s / 16 (`RIPTable`),
-Ping 4 × im 1000-ms-Takt (`Terminal.ping`), Traceroute 20 Hops × 3 Proben (`Terminal.traceroute`).
+| Wert / Regel                    | Original                                                                      | Fundstelle (filius.jar)                                                           | Im Bau                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Verzögerungsfaktor              | 10                                                                            | `Verbindung.<clinit>` @0x0008                                                     | `DELAY_FACTOR`                                                            |
+| Kabelverzögerung                | Faktor × 5 = 50 ms pro Frame                                                  | `Verbindung.holeVerzoegerung` @0x0003                                             | `LINK_DELAY_MS`; Frames je Kabelrichtung nacheinander (SimplexVerbindung) |
+| Wartezeit RTT                   | 50 × Verzögerung × rttFaktor(1) = 2500 ms                                     | `Verbindung.holeRTT` @0x0000, `<clinit>` @0x0011                                  | `RTT_MS`: Ping-Wartezeit je Echo, ARP-Wiederholung                        |
+| MAC-Tabelle                     | Lebensdauer 300 000 ms                                                        | `SwitchFirmware.<init>` @0x002b                                                   | `MAC_AGING_MS`                                                            |
+| ARP                             | 2 Versuche, sonst ICMP 3/1 an den Absender                                    | `IP.sendeUnicastLokal` (`holeARPTabellenEintrag(ip, 2, …)`, `sendeICMP(3, 1, …)`) | `ARP_ATTEMPTS`; wartende Pakete teilen sich eine Auflösung                |
+| Ping                            | `getPingRepeat()` (4) Echos, je danach Rest des 1000-ms-Takts schlafen        | `Terminal.ping`                                                                   | `PING_COUNT`, `PING_INTERVAL_MS`                                          |
+| Ping-Statistik                  | Verlust = round((1 − empfangen/gesendet) × 100), Texte `sw_terminal_msg45…48` | `Terminal.ping`                                                                   | gleiche Formel und Texte                                                  |
+| Ping auf Broadcast / ohne Route | `sw_terminal_msg53` / `sw_terminal_msg52`                                     | `Terminal.ping`                                                                   | «Ping zu Broadcast-Adressen …» / «Zieladresse nicht erreichbar»           |
+| TTL                             | 64                                                                            | `ICMP.sendeICMP` (Teiluntersuchung)                                               | `DEFAULT_TTL`                                                             |
+| Traceroute                      | 20 Stationen × 3 Proben, Abbruch nach > 5 Verlusten                           | `Terminal.traceroute` (Teiluntersuchung)                                          | `TRACEROUTE_*`                                                            |
+| Kabelfarbe aktiv                | grün (0,255,64)                                                               | GUIKabelItem (Teiluntersuchung)                                                   | `--color-cable-active`                                                    |
+
+Abweichungen (echtes Verhalten): Switch schickt nie an den Eingangsport zurück; ARP-Einträge altern nach
+4 h (Original: nie); Hosts leiten nichts weiter. Layer-3-Switches verhalten sich bis Phase 4 wie Switches.
+
+## 5. Werte für spätere Phasen (noch nicht verwendet)
+
+TCP-MSS 1460 (`TCPSocket.MSS`), DHCP 67/68 und 24 h Lease (`DHCPServer`), RIP 30 s / 75 s / 16
+(`RIPTable`) – vor der Umsetzung in Phase 5 selbst nachlesen.

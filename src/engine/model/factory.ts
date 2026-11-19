@@ -93,6 +93,7 @@ export function addDevice(
     dns: '',
     dhcpClient: false,
     note: '',
+    routes: [],
   };
   project.devices.push(device);
   // Einzeln anhängen, damit jede neue MAC auch gegen die Karten desselben Geräts geprüft wird.

@@ -11,7 +11,6 @@ export const deCH = {
   'toolbar.cableTool': 'Kabel',
   'toolbar.design': 'Entwurf',
   'toolbar.simulation': 'Simulation',
-  'toolbar.simulationSoon': 'Der Simulationsmodus folgt in der nächsten Ausbaustufe.',
   'toolbar.theme': 'Hell/Dunkel umschalten',
   'toolbar.language': 'Sprache',
   'toolbar.fileMenu': 'Datei',
@@ -55,6 +54,22 @@ export const deCH = {
   'panel.tooManyInterfaces': 'Maximal 8 Schnittstellen erlaubt!',
   'panel.tooFewInterfaces': 'Mindestens eine Schnittstelle ist nötig.',
   'panel.swapHint': 'Ist der gewählte Port belegt, werden die Verbindungen getauscht.',
+
+  'sim.panel': 'Simulation',
+  'sim.terminal': 'Befehlszeile',
+  'sim.terminalHint': 'Befehl eingeben, z. B. «ping 192.168.0.11», «ipconfig» oder «help».',
+  'sim.commandInput': 'Befehl',
+  'sim.running': 'läuft …',
+  'sim.macTable': 'MAC-Tabelle',
+  'sim.macTableEmpty': 'Noch keine Einträge – zuerst einen Ping senden.',
+  'sim.refresh': 'Aktualisieren',
+  'sim.speed': 'Tempo',
+  'sim.speedSlow': 'Langsam',
+  'sim.speedNormal': 'Normal',
+  'sim.speedFast': 'Schnell',
+  'sim.selectDevice':
+    'Klicke auf einen Rechner oder Router, um seine Befehlszeile zu öffnen, oder auf einen Switch für seine MAC-Tabelle. Während ein Frame unterwegs ist, leuchtet das Kabel grün.',
+  'sim.locked': 'Im Simulationsmodus gesperrt – zurück mit «Entwurf».',
 
   'canvas.empty':
     'Ziehe Geräte aus der Palette hierher. Verbinde sie mit dem Kabel-Werkzeug (Taste K) oder ziehe vom Punkt am Gerät zu einem anderen Gerät.',

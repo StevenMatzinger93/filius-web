@@ -37,6 +37,16 @@ const deviceConfig = z.object({
   dns: optionalIp,
   dhcpClient: z.boolean(),
   note: z.string(),
+  // Seit 0.3 – ältere Dateien ohne Routen bleiben gültig (leere Liste).
+  routes: z
+    .array(
+      z.object({
+        destination: ipString,
+        prefix: z.number().int().min(0).max(32),
+        nextHop: ipString,
+      }),
+    )
+    .default([]),
 });
 
 const linkEnd = z.object({ deviceId: z.string(), interfaceId: z.string() });

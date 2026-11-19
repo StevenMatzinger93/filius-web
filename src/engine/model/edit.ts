@@ -1,4 +1,14 @@
-import { isValidIp, isValidMac, isValidMask, normalizeMac, parseMask } from './address.ts';
+import {
+  formatIp,
+  isValidIp,
+  isValidMac,
+  isValidMask,
+  maskToPrefix,
+  networkOf,
+  normalizeMac,
+  parseIp,
+  parseMask,
+} from './address.ts';
 import { routerPortName } from './catalog.ts';
 import { newInterface } from './factory.ts';
 import { ROUTER_MAX_INTERFACES, ROUTER_MIN_INTERFACES } from './original.ts';
@@ -19,7 +29,39 @@ export type EditError =
   | 'duplicate-mac'
   | 'not-a-router'
   | 'too-many-interfaces'
-  | 'too-few-interfaces';
+  | 'too-few-interfaces'
+  | 'duplicate-route'
+  | 'unknown-route';
+
+/**
+ * Statische Route hinzufügen (Original: Reiter «Weiterleitungstabelle», «Neuer Eintrag»).
+ * Die Maske darf hier 0.0.0.0 sein (Default-Route). Das Ziel wird auf die Netzadresse gekürzt.
+ */
+export function addStaticRoute(
+  project: Project,
+  deviceId: string,
+  destination: string,
+  mask: string,
+  nextHop: string,
+): EditError | null {
+  const d = device(project, deviceId);
+  if (typeof d === 'string') return d;
+  if (!isValidIp(destination) || !isValidIp(nextHop)) return 'invalid-ip';
+  const prefix = isValidIp(mask) ? maskToPrefix(parseIp(mask)) : null;
+  if (prefix === null) return 'invalid-mask';
+  const network = formatIp(networkOf(parseIp(destination), prefix));
+  if (d.routes.some((r) => r.destination === network && r.prefix === prefix)) return 'duplicate-route';
+  d.routes.push({ destination: network, prefix, nextHop: nextHop.trim() });
+  return null;
+}
+
+export function removeStaticRoute(project: Project, deviceId: string, index: number): EditError | null {
+  const d = device(project, deviceId);
+  if (typeof d === 'string') return d;
+  if (index < 0 || index >= d.routes.length) return 'unknown-route';
+  d.routes.splice(index, 1);
+  return null;
+}
 
 /**
  * Router-Schnittstelle hinzufügen (Dialog «Verbindungen verwalten» im Original): höchstens 8

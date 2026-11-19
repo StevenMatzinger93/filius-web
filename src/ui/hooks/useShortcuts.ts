@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useProjectStore } from '../../store/projectStore.ts';
 import { useUiStore } from '../../store/uiStore.ts';
 import { openProjectFromFile, saveProjectToFile } from '../projectFile.ts';
+import { enterDesign, enterSimulation } from '../simulationMode.ts';
 
 function isTyping(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -20,17 +21,34 @@ export function useShortcuts(): void {
       const mod = event.ctrlKey || event.metaKey;
       const key = event.key.toLowerCase();
 
+      const simulating = ui.mode === 'simulation';
+      // Modus wechseln wie im Original: Strg+D Entwurf, Strg+R Simulation.
+      if (mod && key === 'r') {
+        event.preventDefault();
+        if (!simulating) enterSimulation();
+        return;
+      }
+      if (mod && key === 'd') {
+        event.preventDefault();
+        if (simulating) enterDesign();
+        return;
+      }
       if (mod && key === 's') {
         event.preventDefault();
-        saveProjectToFile();
+        if (!simulating) saveProjectToFile();
         return;
       }
       if (mod && key === 'o') {
         event.preventDefault();
-        void openProjectFromFile();
+        if (!simulating) void openProjectFromFile();
         return;
       }
       if (isTyping(event.target)) return;
+      // Im Simulationsmodus ist das Netz gesperrt; nur Esc (Auswahl aufheben) bleibt.
+      if (simulating) {
+        if (event.key === 'Escape') store.setSelection({ deviceIds: [], linkIds: [] });
+        return;
+      }
 
       if (mod && key === 'z' && !event.shiftKey) {
         event.preventDefault();

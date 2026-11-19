@@ -13,7 +13,6 @@ export const en: Messages = {
   'toolbar.cableTool': 'Cable',
   'toolbar.design': 'Design',
   'toolbar.simulation': 'Simulation',
-  'toolbar.simulationSoon': 'Simulation mode arrives in the next stage.',
   'toolbar.theme': 'Toggle light/dark',
   'toolbar.language': 'Language',
   'toolbar.fileMenu': 'File',
@@ -57,6 +56,22 @@ export const en: Messages = {
   'panel.tooManyInterfaces': 'At most 8 interfaces allowed!',
   'panel.tooFewInterfaces': 'At least one interface is required.',
   'panel.swapHint': 'If the chosen port is in use, the connections are swapped.',
+
+  'sim.panel': 'Simulation',
+  'sim.terminal': 'Command line',
+  'sim.terminalHint': 'Type a command, e.g. “ping 192.168.0.11”, “ipconfig” or “help”.',
+  'sim.commandInput': 'Command',
+  'sim.running': 'running …',
+  'sim.macTable': 'MAC table',
+  'sim.macTableEmpty': 'No entries yet – send a ping first.',
+  'sim.refresh': 'Refresh',
+  'sim.speed': 'Speed',
+  'sim.speedSlow': 'Slow',
+  'sim.speedNormal': 'Normal',
+  'sim.speedFast': 'Fast',
+  'sim.selectDevice':
+    'Click a computer or router to open its command line, or a switch for its MAC table. A cable lights up green while a frame is on it.',
+  'sim.locked': 'Locked in simulation mode – go back with “Design”.',
 
   'canvas.empty':
     'Drag devices here from the palette. Connect them with the cable tool (key K) or drag from the dot on a device to another device.',

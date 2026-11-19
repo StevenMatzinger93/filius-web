@@ -57,6 +57,15 @@ export interface DeviceConfig {
   dhcpClient: boolean;
   /** Freitext-Notiz (Dokumentation). */
   note: string;
+  /** Manuelle Einträge der Weiterleitungstabelle (Original: Weiterleitungstabelle.manuelleTabelle). */
+  routes: StaticRoute[];
+}
+
+/** Statische Route: Zielnetz/Präfix über das nächste Gateway. */
+export interface StaticRoute {
+  destination: string;
+  prefix: number;
+  nextHop: string;
 }
 
 export interface LinkEnd {

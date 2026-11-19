@@ -8,11 +8,13 @@ import { usePersistence } from './ui/hooks/usePersistence.ts';
 import { useShortcuts } from './ui/hooks/useShortcuts.ts';
 import { DevicePalette } from './ui/palette/DevicePalette.tsx';
 import { PropertiesPanel } from './ui/panels/PropertiesPanel.tsx';
+import { SimulationPanel } from './ui/panels/SimulationPanel.tsx';
 import { StatusBar } from './ui/StatusBar.tsx';
 import { Toolbar } from './ui/Toolbar.tsx';
 
 export function App() {
   const theme = useUiStore((s) => s.theme);
+  const mode = useUiStore((s) => s.mode);
   const locale = useLocale((s) => s.locale);
   const autosave = usePersistence();
   const { version } = useEngine();
@@ -32,7 +34,7 @@ export function App() {
           <main className="min-w-0 flex-1">
             <NetworkCanvas />
           </main>
-          <PropertiesPanel />
+          {mode === 'simulation' ? <SimulationPanel /> : <PropertiesPanel />}
         </div>
         <StatusBar autosave={autosave} engineVersion={version} />
       </div>

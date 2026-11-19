@@ -4,6 +4,7 @@ import { DEVICE_CATALOG, type PaletteGroup } from '../../engine/model/catalog.ts
 import { DEVICE_TYPES, type DeviceType } from '../../engine/model/project.ts';
 import { useT } from '../../i18n/index.ts';
 import { useProjectStore } from '../../store/projectStore.ts';
+import { useUiStore } from '../../store/uiStore.ts';
 import { DEVICE_DRAG_MIME } from '../canvas/NetworkCanvas.tsx';
 import { DEVICE_NODE_HEIGHT, DEVICE_NODE_WIDTH } from '../canvas/DeviceNode.tsx';
 import { DeviceIcon } from '../icons/DeviceIcon.tsx';
@@ -14,6 +15,8 @@ export function DevicePalette() {
   const t = useT();
   const addDevice = useProjectStore((s) => s.addDevice);
   const { screenToFlowPosition } = useReactFlow();
+  // Wie im Original: Im Simulationsmodus lässt sich das Netz nicht verändern.
+  const locked = useUiStore((s) => s.mode === 'simulation');
 
   const onDragStart = (event: DragEvent, type: DeviceType) => {
     event.dataTransfer.setData(DEVICE_DRAG_MIME, type);
@@ -48,12 +51,13 @@ export function DevicePalette() {
               <li key={type}>
                 <button
                   type="button"
-                  draggable
+                  draggable={!locked}
+                  disabled={locked}
                   onDragStart={(e) => onDragStart(e, type)}
                   onKeyDown={(e) => onKeyDown(e, type)}
-                  title={t(`device.${type}`)}
+                  title={locked ? t('sim.locked') : t(`device.${type}`)}
                   data-device-type={type}
-                  className="flex w-full cursor-grab flex-col items-center rounded-md border border-transparent bg-white/70 p-1 text-center text-xxs leading-tight hover:border-accent hover:bg-white active:cursor-grabbing dark:bg-gray-800/70 dark:hover:bg-gray-700"
+                  className="flex w-full cursor-grab flex-col items-center rounded-md border border-transparent bg-white/70 p-1 text-center text-xxs leading-tight hover:border-accent hover:bg-white active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800/70 dark:hover:bg-gray-700"
                 >
                   <DeviceIcon type={type} size={36} />
                   <span className="mt-0.5 line-clamp-2">{t(`device.${type}`)}</span>
@@ -63,7 +67,9 @@ export function DevicePalette() {
           </ul>
         </section>
       ))}
-      <p className="mt-auto px-1 text-xxs text-ink-soft dark:text-gray-400">{t('palette.hint')}</p>
+      <p className="mt-auto px-1 text-xxs text-ink-soft dark:text-gray-400">
+        {locked ? t('sim.locked') : t('palette.hint')}
+      </p>
     </nav>
   );
 }

@@ -40,6 +40,7 @@ export function NetworkCanvas() {
   const connectDevices = useProjectStore((s) => s.connectDevices);
   const theme = useUiStore((s) => s.theme);
   const cableTool = useUiStore((s) => s.cableTool);
+  const simulating = useUiStore((s) => s.mode === 'simulation');
   const cableFrom = useUiStore((s) => s.cableFrom);
   const setCableFrom = useUiStore((s) => s.setCableFrom);
   const { screenToFlowPosition } = useReactFlow();
@@ -151,13 +152,13 @@ export function NetworkCanvas() {
   const onDrop = useCallback(
     (event: DragEvent) => {
       const type = event.dataTransfer.getData(DEVICE_DRAG_MIME);
-      if (!isDeviceType(type)) return;
+      if (!isDeviceType(type) || simulating) return;
       event.preventDefault();
       const p = screenToFlowPosition({ x: event.clientX, y: event.clientY });
       const snap = (v: number) => Math.round(v / GRID) * GRID;
       addDevice(type, { x: snap(p.x - DEVICE_NODE_WIDTH / 2), y: snap(p.y - DEVICE_NODE_HEIGHT / 2) });
     },
-    [screenToFlowPosition, addDevice],
+    [screenToFlowPosition, addDevice, simulating],
   );
 
   const fromName = cableFrom ? project.devices.find((d) => d.id === cableFrom)?.name : undefined;
@@ -174,6 +175,8 @@ export function NetworkCanvas() {
         onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
+        nodesDraggable={!simulating}
+        nodesConnectable={!simulating}
         connectionMode={ConnectionMode.Loose}
         snapToGrid
         snapGrid={[GRID, GRID]}

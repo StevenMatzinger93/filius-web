@@ -153,27 +153,27 @@
       "group": "timing",
       "value": 50,
       "unit": "ms",
-      "source": "filius.jar Verbindung.holeVerzoegerung (factor 10 x 5 ms)"
+      "source": "filius.jar Verbindung.holeVerzoegerung @0x0003 (factor from Verbindung.<clinit> @0x0008 = 10, x 5 ms)"
     },
     {
       "name": "round trip time base",
       "group": "timing",
       "value": 2500,
       "unit": "ms",
-      "source": "filius.jar Verbindung.holeRTT"
+      "source": "filius.jar Verbindung.holeRTT @0x0000 (50 x delay x rttFactor 1)"
     },
     {
       "name": "mac table aging",
       "group": "switch",
       "value": 300,
       "unit": "s",
-      "source": "filius.jar SwitchFirmware.<init>"
+      "source": "filius.jar SwitchFirmware.<init> @0x002b (300000L)"
     },
     {
       "name": "arp request attempts",
       "group": "arp",
       "value": 2,
-      "source": "filius.jar IP.sendeUnicastLokal"
+      "source": "filius.jar IP.sendeUnicastLokal (holeARPTabellenEintrag(ip, 2, 1))"
     },
     {
       "name": "ip ttl default",
@@ -222,7 +222,7 @@
       "group": "cli",
       "value": 1000,
       "unit": "ms",
-      "source": "filius.jar Terminal.ping"
+      "source": "filius.jar Terminal.ping (sleep 1000L - elapsed)"
     },
     {
       "name": "traceroute max hops",

@@ -1,33 +1,26 @@
 import { useEffect, useState } from 'react';
-import { useProjectStore } from '../../store/projectStore.ts';
-import { EngineClient } from '../../worker/client.ts';
+import { getEngine } from '../../worker/engine.ts';
 
-/** Startet den Simulations-Worker und übergibt ihm das aktuelle Projekt. */
+/** Startet den Simulations-Worker und meldet seine Version für die Statusleiste. */
 export function useEngine(): { version: string | null } {
   const [version, setVersion] = useState<string | null>(null);
 
   useEffect(() => {
-    let engine: EngineClient;
+    let cancelled = false;
     try {
-      engine = new EngineClient();
+      getEngine()
+        .request({ kind: 'hello' })
+        .then(
+          (r) => {
+            if (!cancelled) setVersion(r.engineVersion);
+          },
+          () => undefined,
+        );
     } catch {
-      return;
+      // Ohne Worker-Unterstützung bleibt die Anzeige «startet …».
     }
-    engine.request({ kind: 'hello' }).then(
-      (r) => setVersion(r.engineVersion),
-      () => setVersion(null),
-    );
-    const sync = () =>
-      void engine
-        .request({ kind: 'load-project', project: useProjectStore.getState().project })
-        .catch(() => undefined);
-    sync();
-    const unsubscribe = useProjectStore.subscribe((s, prev) => {
-      if (s.project !== prev.project) sync();
-    });
     return () => {
-      unsubscribe();
-      engine.dispose();
+      cancelled = true;
     };
   }, []);
 

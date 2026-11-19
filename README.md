@@ -70,6 +70,20 @@ beendet sich (für automatische Prüfungen).
 
 Jede Änderung wird automatisch im Browser (IndexedDB) gesichert. Daten verlassen den Rechner nie.
 
+## Simulation starten
+
+1. Oben rechts auf **Simulation** klicken (oder **Strg+R**). Wie im Original starten dabei alle Geräte neu,
+   und das Netz ist gesperrt (zurück mit **Entwurf** bzw. **Strg+D**).
+2. Einen **Rechner oder Router anklicken** – rechts öffnet sich seine **Befehlszeile**.
+3. Einen Befehl eingeben, z. B. `ping 192.168.0.11` oder `ping Rechner2`, und Enter drücken.
+   Während ein Frame unterwegs ist, **leuchtet das Kabel grün**. Das Tempo stellst du oben rechts ein.
+4. Einen **Switch anklicken**, um seine **MAC-Tabelle** zu sehen (welche MAC an welchem Port gelernt wurde).
+
+Befehle: `ipconfig`, `ping <ziel>`, `traceroute <ziel>`, `route`, `arp` (`arp -d` löscht), `cls`, `help`.
+Damit Rechner in verschiedenen Netzen sich erreichen, braucht es einen Router und bei den Rechnern das
+**Gateway** (Adresse des Routers im eigenen Netz). Weitere Netze trägst du beim Router unter
+**Statische Routen** ein.
+
 ## Lizenz
 
 GPL-3.0-or-later (siehe [`LICENSE`](LICENSE)).

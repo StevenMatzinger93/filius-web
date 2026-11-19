@@ -7,6 +7,7 @@ import {
   type Node,
 } from '@xyflow/react';
 import { memo } from 'react';
+import { useSimStore } from '../../store/simStore.ts';
 
 export interface LinkEdgeData extends Record<string, unknown> {
   aPort: string;
@@ -40,6 +41,8 @@ function borderPoint(node: InternalNode<Node>, toward: Point): Point {
 function LinkEdgeComponent({ id, source, target, data, selected }: EdgeProps<LinkEdgeType>) {
   const sourceNode = useInternalNode(source);
   const targetNode = useInternalNode(target);
+  // Wie im Original: Das Kabel leuchtet grün (0,255,64), solange ein Frame darauf unterwegs ist.
+  const active = useSimStore((s) => (s.activeLinks[id] ?? 0) > 0);
   if (!sourceNode || !targetNode) return null;
   const s = borderPoint(sourceNode, center(targetNode));
   const t = borderPoint(targetNode, center(sourceNode));
@@ -61,8 +64,12 @@ function LinkEdgeComponent({ id, source, target, data, selected }: EdgeProps<Lin
         path={path}
         interactionWidth={14}
         style={{
-          stroke: selected ? 'var(--color-accent)' : 'var(--xy-edge-stroke)',
-          strokeWidth: selected ? 3 : 2,
+          stroke: active
+            ? 'var(--color-cable-active)'
+            : selected
+              ? 'var(--color-accent)'
+              : 'var(--xy-edge-stroke)',
+          strokeWidth: active ? 5 : selected ? 3 : 2,
         }}
       />
       {data && (

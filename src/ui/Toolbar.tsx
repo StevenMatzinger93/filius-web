@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useLocale, useT, type Locale } from '../i18n/index.ts';
 import { openProjectFromFile, saveProjectToFile } from './projectFile.ts';
+import { enterDesign, enterSimulation } from './simulationMode.ts';
 import { useProjectStore } from '../store/projectStore.ts';
 import { useUiStore } from '../store/uiStore.ts';
 
@@ -74,6 +75,7 @@ export function Toolbar() {
   const newProject = useProjectStore((s) => s.newProject);
   const change = useProjectStore((s) => s.change);
   const { theme, setTheme, cableTool, toggleCableTool, mode } = useUiStore();
+  const simulating = mode === 'simulation';
 
   const onNew = () => {
     if (dirty && !window.confirm(t('dialog.confirmNew'))) return;
@@ -99,14 +101,28 @@ export function Toolbar() {
         </div>
       </div>
       <nav aria-label={t('toolbar.fileMenu')} className="flex items-center gap-0.5">
-        <ToolButton label={t('toolbar.new')} icon="new" shortcut="Alt+N" onClick={onNew} />
+        {/* Wie im Original sind Neu, Öffnen und Speichern im Simulationsmodus gesperrt. */}
+        <ToolButton
+          label={t('toolbar.new')}
+          icon="new"
+          shortcut="Alt+N"
+          onClick={onNew}
+          disabled={simulating}
+        />
         <ToolButton
           label={t('toolbar.open')}
           icon="open"
           shortcut="Strg+O"
           onClick={() => void openProjectFromFile()}
+          disabled={simulating}
         />
-        <ToolButton label={t('toolbar.save')} icon="save" shortcut="Strg+S" onClick={saveProjectToFile} />
+        <ToolButton
+          label={t('toolbar.save')}
+          icon="save"
+          shortcut="Strg+S"
+          onClick={saveProjectToFile}
+          disabled={simulating}
+        />
       </nav>
       <span className="mx-2 h-6 w-px bg-gray-300 dark:bg-gray-600" aria-hidden="true" />
       <ToolButton
@@ -114,14 +130,14 @@ export function Toolbar() {
         icon="undo"
         shortcut="Strg+Z"
         onClick={undo}
-        disabled={!canUndo}
+        disabled={!canUndo || simulating}
       />
       <ToolButton
         label={t('toolbar.redo')}
         icon="redo"
         shortcut="Strg+Y"
         onClick={redo}
-        disabled={!canRedo}
+        disabled={!canRedo || simulating}
       />
       <span className="mx-2 h-6 w-px bg-gray-300 dark:bg-gray-600" aria-hidden="true" />
       <ToolButton
@@ -130,6 +146,7 @@ export function Toolbar() {
         shortcut="K"
         active={cableTool}
         onClick={() => toggleCableTool()}
+        disabled={simulating}
       />
       <div className="ml-auto flex items-center gap-1">
         <div
@@ -137,13 +154,19 @@ export function Toolbar() {
           aria-label="Modus"
           className="flex rounded-md border border-gray-300 dark:border-gray-600"
         >
-          <ToolButton label={t('toolbar.design')} icon="design" active={mode === 'design'} />
+          <ToolButton
+            label={t('toolbar.design')}
+            icon="design"
+            shortcut="Strg+D"
+            active={mode === 'design'}
+            onClick={enterDesign}
+          />
           <ToolButton
             label={t('toolbar.simulation')}
             icon="play"
+            shortcut="Strg+R"
             active={mode === 'simulation'}
-            disabled
-            title={t('toolbar.simulationSoon')}
+            onClick={enterSimulation}
           />
         </div>
         <ToolButton

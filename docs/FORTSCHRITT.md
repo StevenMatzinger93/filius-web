@@ -33,3 +33,19 @@
 - Tests: 36 Vitest-Tests (Engine-Abdeckung ≈ 99 %), 7 Playwright-Tests (inkl. «keine Konsolenfehler»).
 - `npm run build` ohne Fehler und Warnungen.
 - Nächster Schritt: Phase 3 (Ethernet, Switch-Lernen, ARP, IPv4, ICMP, Router, Ping).
+
+## Phase 3 – Engine Schicht 2/3 und Simulationsmodus (19.11.2026) ✅
+
+- Engine in virtueller Zeit (`src/engine/simulation.ts`): Kabel mit 50 ms pro Frame und Warteschlange je
+  Richtung, Switch mit MAC-Lernen/Fluten/Alterung (300 s), ARP (2 Versuche à 2500 ms), IPv4 mit TTL 64,
+  Weiterleitung nur auf Routern, ICMP Echo, Time Exceeded, Unreachable.
+- Weiterleitungstabelle wie im Original (eigene Adressen, angeschlossene Netze, Loopback, manuelle Routen,
+  Default-Route), Auswahl nach längstem Präfix; statische Routen im Datenmodell (abwärtskompatibel).
+- Befehlszeile: `ipconfig`, `ping`, `traceroute`, `route`, `arp [-a|-d]`, `cls`, `help` mit Texten des Originals.
+- Simulationsmodus in der Oberfläche: Netz gesperrt, Befehlszeile je Gerät, MAC-Tabelle der Switches,
+  grün leuchtende Kabel, Tempo Langsam/Normal/Schnell.
+- Alle Simulationswerte selbst im Bytecode nachgelesen (MECHANICS.md, Abschnitt 4).
+- Tests: 53 Vitest-Tests (Engine > 80 % Abdeckung), 9 Playwright-Tests.
+- Noch offen in Phase 3: Panel zum Bearbeiten statischer Routen in der Oberfläche (Engine und Datenmodell
+  fertig) – folgt zusammen mit der Router-CLI in Phase 4.
+- Nächster Schritt: Phase 4 (VLANs).

@@ -28,3 +28,27 @@ export const ROUTER_MIN_INTERFACES = 1;
 
 /** MAC-Oktette sind Random.nextInt(255), also 0 … 254 – Information.holeFreieMACAdresse @0x001c. */
 export const MAC_OCTET_MAX = 254;
+
+// ------------------------------------------------------------------ Simulation (Phase 3)
+
+/** Standard-Verzögerungsfaktor – Verbindung.<clinit> @0x0008 (bipush 10). */
+export const DELAY_FACTOR = 10;
+/** Kabelverzögerung pro Frame = Faktor × 5 ms – Verbindung.holeVerzoegerung @0x0003. */
+export const LINK_DELAY_MS = DELAY_FACTOR * 5;
+/** Wartezeit (RTT) = 50 × Verzögerung × rttFaktor(1) – Verbindung.holeRTT @0x0000, Verbindung.<clinit> @0x0011. */
+export const RTT_MS = 50 * LINK_DELAY_MS * 1;
+/** ARP-Anfragen, bevor aufgegeben wird – IP.sendeUnicastLokal (holeARPTabellenEintrag(ip, 2, …)). */
+export const ARP_ATTEMPTS = 2;
+/** Lebensdauer eines MAC-Tabelleneintrags im Switch – SwitchFirmware.<init> @0x002b (300000L). */
+export const MAC_AGING_MS = 300_000;
+/** TTL neuer IP-Pakete – ICMP.sendeICMP / TransportProtokoll.run. */
+export const DEFAULT_TTL = 64;
+/** Anzahl Echo-Anfragen eines Pings – Information.getPingRepeat (Standard 4), Terminal.ping. */
+export const PING_COUNT = 4;
+/** Takt der Echo-Anfragen – Terminal.ping (1000L − verstrichene Zeit). */
+export const PING_INTERVAL_MS = 1000;
+/** Traceroute: höchstens 20 Stationen, 3 Proben je Station – Terminal.traceroute. */
+export const TRACEROUTE_MAX_HOPS = 20;
+export const TRACEROUTE_PROBES = 3;
+/** Traceroute bricht nach mehr als 5 Verlusten in Folge ab – Terminal.traceroute. */
+export const TRACEROUTE_MAX_LOSSES = 5;
