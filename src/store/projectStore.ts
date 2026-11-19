@@ -2,6 +2,7 @@ import { applyPatches, enablePatches, produceWithPatches, type Patch } from 'imm
 import { create } from 'zustand';
 import { addDevice, createProject, pasteDevices } from '../engine/model/factory.ts';
 import { translatorFor, useLocale } from '../i18n/index.ts';
+import { createExampleProject } from '../io/examples.ts';
 import type { DeviceConfig, DeviceType, LinkConfig, Position, Project } from '../engine/model/project.ts';
 import {
   connect,
@@ -69,7 +70,8 @@ function nowIso(): string {
 }
 
 export const useProjectStore = create<ProjectState>()((set, get) => ({
-  project: createProject('Neues Netz', 1, nowIso()),
+  // Startet sofort mit dem Beispielnetz; ein gespeicherter Stand aus IndexedDB ersetzt es danach.
+  project: createExampleProject(translatorFor(useLocale.getState().locale)('project.exampleName'), nowIso()),
   past: [],
   future: [],
   selection: emptySelection,
